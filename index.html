@@ -4,13 +4,16 @@
     <title>Lol</title>
   </head>
   <body>
+    <textarea id="junk">THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG</textarea>
     <button id="lol">beep</button>
 	<script type="module">
         import init, { Player } from "./pkg/toorcamp_tty.js";
         await init();
 
         document.getElementById("lol").onclick = async function() {
-            var player = await new Player();
+            var player = await new Player(
+                document.getElementById("junk").textContent
+            );
             player.play();
         }
     </script>
