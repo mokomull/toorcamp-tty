@@ -19,37 +19,59 @@ impl Player {
         let oscillator = OscillatorNode::new(&ctx)?;
         oscillator.set_type(Sine);
 
-        let table: HashMap<char, &[u8; 5]> = [
-            ('A', b"11000"),
-            ('B', b"10011"),
-            ('C', b"01110"),
-            ('D', b"10010"),
-            ('E', b"10000"),
-            ('F', b"10110"),
-            ('G', b"01011"),
-            ('H', b"00101"),
-            ('I', b"01100"),
-            ('J', b"11010"),
-            ('K', b"11110"),
-            ('L', b"01001"),
-            ('M', b"00111"),
-            ('N', b"00110"),
-            ('O', b"00011"),
-            ('P', b"01101"),
-            ('Q', b"11101"),
-            ('R', b"01010"),
-            ('S', b"10100"),
-            ('T', b"00001"),
-            ('U', b"11100"),
-            ('V', b"01111"),
-            ('W', b"11001"),
-            ('X', b"10111"),
-            ('Y', b"10101"),
-            ('Z', b"10001"),
-            (' ', b"00100"),
+        #[derive(Clone, Copy, PartialEq)]
+        enum Case {
+            Letters,
+            Figures,
+        }
+        use Case::*;
+
+        let table: HashMap<char, (Case, &[u8; 5])> = [
+            // Letters
+            ('A', (Letters, b"11000")),
+            ('B', (Letters, b"10011")),
+            ('C', (Letters, b"01110")),
+            ('D', (Letters, b"10010")),
+            ('E', (Letters, b"10000")),
+            ('F', (Letters, b"10110")),
+            ('G', (Letters, b"01011")),
+            ('H', (Letters, b"00101")),
+            ('I', (Letters, b"01100")),
+            ('J', (Letters, b"11010")),
+            ('K', (Letters, b"11110")),
+            ('L', (Letters, b"01001")),
+            ('M', (Letters, b"00111")),
+            ('N', (Letters, b"00110")),
+            ('O', (Letters, b"00011")),
+            ('P', (Letters, b"01101")),
+            ('Q', (Letters, b"11101")),
+            ('R', (Letters, b"01010")),
+            ('S', (Letters, b"10100")),
+            ('T', (Letters, b"00001")),
+            ('U', (Letters, b"11100")),
+            ('V', (Letters, b"01111")),
+            ('W', (Letters, b"11001")),
+            ('X', (Letters, b"10111")),
+            ('Y', (Letters, b"10101")),
+            ('Z', (Letters, b"10001")),
+            (' ', (Letters, b"00100")),
+            // Figures
+            ('0', (Figures, b"01101")),
+            ('1', (Figures, b"10111")),
+            ('2', (Figures, b"10011")),
+            ('3', (Figures, b"10000")),
+            ('4', (Figures, b"01010")),
+            ('5', (Figures, b"00001")),
+            ('6', (Figures, b"10101")),
+            ('7', (Figures, b"11100")),
+            ('8', (Figures, b"01100")),
+            ('9', (Figures, b"00011")),
+            ('.', (Figures, b"00111")),
         ]
         .into_iter()
         .collect();
+
+        let mut case = None;
 
         {
             const PERIOD: f64 = 1.0 / 45.45;
@@ -58,7 +80,25 @@ impl Player {
 
             let frequency = oscillator.frequency();
 
-            for (i, &bits) in text.chars().flat_map(|c| table.get(&c)).enumerate() {
+            for (i, &bits) in text
+                .chars()
+                .flat_map(|c| match table.get(&c) {
+                    None => vec![],
+                    Some(&(next_case, bits)) => {
+                        if case != Some(next_case) {
+                            let shift = match next_case {
+                                Letters => b"11111",
+                                Figures => b"11011",
+                            };
+                            case = Some(next_case);
+                            vec![shift, bits]
+                        } else {
+                            vec![bits]
+                        }
+                    }
+                })
+                .enumerate()
+            {
                 let start = i as f64 * 8.0 * PERIOD;
                 frequency.set_value_at_time(SPACE, start)?;
 
