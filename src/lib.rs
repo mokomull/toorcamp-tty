@@ -16,7 +16,17 @@ impl Player {
         JsFuture::from(ctx.suspend()?).await?;
         let oscillator = OscillatorNode::new(&ctx)?;
         oscillator.set_type(Sine);
-        oscillator.frequency().set_value(1004.0);
+
+        {
+            const PERIOD: f64 = 1.0 / 45.45;
+            const SPACE: f32 = 1800.0;
+            const MARK: f32 = 1400.0;
+
+            let frequency = oscillator.frequency();
+            for (i, val) in [SPACE, MARK, MARK, SPACE, SPACE, SPACE, MARK].into_iter().enumerate() {
+                frequency.set_value_at_time(val, i as f64 * PERIOD)?;
+            }
+        }
 
         oscillator
             .connect_with_audio_node(&ctx.destination())
