@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Lol</title>
+  </head>
+  <body>
+    <button id="lol">beep</button>
+	<script type="module">
+        import init, { Player } from "./pkg/toorcamp_tty.js";
+        await init();
+
+        document.getElementById("lol").onclick = async function() {
+            var player = await new Player();
+            player.play();
+        }
+    </script>
+  </body>
+</html>
