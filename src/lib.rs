@@ -57,8 +57,8 @@ impl Player {
             (' ', (Letters, b"00100")),
             // Figures
             ('0', (Figures, b"01101")),
-            ('1', (Figures, b"10111")),
-            ('2', (Figures, b"10011")),
+            ('1', (Figures, b"11101")),
+            ('2', (Figures, b"11001")),
             ('3', (Figures, b"10000")),
             ('4', (Figures, b"01010")),
             ('5', (Figures, b"00001")),
