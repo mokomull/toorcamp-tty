@@ -12,7 +12,7 @@
 
         document.getElementById("lol").onclick = async function() {
             var player = await new Player(
-                document.getElementById("junk").textContent
+                document.getElementById("junk").value
             );
             player.play();
         }
