@@ -27,6 +27,7 @@ impl Player {
 
     #[wasm_bindgen]
     pub async fn play(&self) {
+        self.oscillator.start().unwrap();
         JsFuture::from(self.ctx.resume().unwrap()).await.unwrap();
     }
 }
